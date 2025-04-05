@@ -2,7 +2,10 @@
 const swaggerAutogen = require("swagger-autogen")();
 require("dotenv").config();
 const port = process.env.PORT;
-const doc = {
+const env=process.env.NODE_ENV;
+if(env==="development")
+{
+  const doc = {
     info: {
       title: "Employee Payroll",
       description: "API for managing employee automatically",
@@ -27,3 +30,4 @@ const doc = {
  swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
     require("../server.js"); // Start the server after generating docs
   });
+}

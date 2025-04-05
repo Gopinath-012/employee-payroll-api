@@ -4,7 +4,7 @@ const authRoutes = require('./authentication/authRoutes');
 const employeeRoutes = require('./employee/employeeRoutes');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require("./swagger.json"); // Auto-generated file
+//const swaggerDocument = require("./swagger.json"); // Auto-generated file
 
 require("dotenv").config();
 const app = express();
@@ -12,6 +12,22 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 connectDB();
+const env = process.env.NODE_ENV;
+let swaggerDocument;
+if (env === 'development') {
+  swaggerDocument = require("./swagger.json"); // Full API docs
+} else {
+  // Empty Swagger spec for production
+  swaggerDocument = {
+    openapi: "3.0.0",
+    info: {
+      title: "API Documentation",
+      version: "1.0.0",
+      description: "Swagger UI (No endpoints visible in production)",
+    },
+    paths: {}, // Empty paths
+  };
+}
 
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
