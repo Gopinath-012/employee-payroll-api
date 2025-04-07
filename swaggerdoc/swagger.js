@@ -11,8 +11,10 @@ if(env==="development")
       description: "API for managing employee automatically",
       version: "1.0.0",
     },
+    
     host: `localhost:${port}`, // Change this based on your environment
     schemes: ["http"],
+ 
     securityDefinitions: {
         BearerAuth: {
           type: "apiKey",
@@ -25,8 +27,8 @@ if(env==="development")
   };
 
   const outputFile = "../swagger.json"; // Auto-generated file
-  const endpointsFiles = ["../server.js"]; // Main server file
-
+  //const endpointsFiles = ["../server.js"]; // Main server file
+  const endpointsFiles = ["../server.js"];
  swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
     require("../server.js"); // Start the server after generating docs
   });

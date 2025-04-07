@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
 
         const newUser = new User({ name, email, password });
         await newUser.save();
-        sendResponse(res, httpstatus.Success.OK, "Employee created successfully", { user:newUser })
+        sendResponse(res, httpstatus.Success.CREATED, "Employee created successfully", { user:newUser })
        
     } catch (error) {
         sendResponse(res, httpstatus.ServerError.INTERNAL_SERVER_ERROR, "Failed to create employee", {}, { message: error.message });

@@ -5,7 +5,7 @@
     "description": "API for managing employee automatically",
     "version": "1.0.0"
   },
-  "host": "localhost:2071",
+  "host": "localhost:1221",
   "basePath": "/",
   "schemes": [
     "http"

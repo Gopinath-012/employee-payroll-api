@@ -3,6 +3,7 @@ const calculateSalary = require("../employee/calculateSalary");
 const sendResponse = require("../utils/responseHandler");
 const httpStatus = require("../utils/httpStatus")
 
+
 exports.createEmployee = async (req, res) => {
     try {
         const { name, email, earnings, deductions } = req.body;
@@ -30,6 +31,8 @@ exports.createEmployee = async (req, res) => {
 
 
 
+
+
 exports.getCurrentSalary = async (req, res) => {
     try {
         const employee = await Employee.findById(req.params.id);
@@ -41,6 +44,7 @@ exports.getCurrentSalary = async (req, res) => {
 
     }
 };
+
 
 exports.updateEmployeeSalary = async (req, res) => {
     try {
@@ -76,6 +80,7 @@ exports.updateEmployeeSalary = async (req, res) => {
     }
 };
 
+
 exports.deleteEmployee = async (req, res) => {
     try {
         const employee = await Employee.findByIdAndDelete(req.params.id);
@@ -87,6 +92,7 @@ exports.deleteEmployee = async (req, res) => {
        
     }
 };
+
 
 exports.getAll = async (req, res) => {
     try {
