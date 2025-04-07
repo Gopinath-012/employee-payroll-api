@@ -1,27 +1,30 @@
 const Employee = require("../employee/Employee");
 const calculateSalary = require("../employee/calculateSalary");
+const sendResponse = require("../utils/responseHandler");
+const httpStatus = require("../utils/httpStatus")
 
 exports.createEmployee = async (req, res) => {
     try {
         const { name, email, earnings, deductions } = req.body;
 
         if (!name || !email || !earnings || !deductions) {
-            return res.status(400).json({ error: "All fields are required" });
-        }
+            sendResponse(res, httpStatus.ClientError.UNAUTHORIZED, "All fields are required created successfully", { errors: "All fields are required created successfully" })
+            }
 
         const salaryRecord = calculateSalary({ ...earnings, ...deductions });
 
         const newEmployee = new Employee({
             name,
             email,
-            //salaryHistory: [salaryRecord],
             currentSalary: salaryRecord
         });
 
         await newEmployee.save();
-        res.status(201).json({ message: "Employee created successfully", employee: newEmployee });
+        sendResponse(res, httpStatus.Success.CREATED, "Employee created successfully", { employee: newEmployee })
+
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendResponse(res, httpStatus.ServerError.INTERNAL_SERVER_ERROR, "Failed to Create Employee", { employee: null })
+
     }
 };
 
@@ -31,10 +34,11 @@ exports.getCurrentSalary = async (req, res) => {
     try {
         const employee = await Employee.findById(req.params.id);
         if (!employee) return res.status(404).json({ message: "Employee not found" });
+        sendResponse(res, httpStatus.Success.OK, "Get Current SalryInfo For Employee", { name: employee.name, email: employee.email, currentSalary: employee.currentSalary })
 
-        res.json({ name:employee.name,email:employee.email,currentSalary: employee.currentSalary });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendResponse(res, httpStatus.ServerError.INTERNAL_SERVER_ERROR, "Error", {}, { error: error.message })
+
     }
 };
 
@@ -45,30 +49,30 @@ exports.updateEmployeeSalary = async (req, res) => {
         const { id, earnings, deductions } = req.body;
 
         if (!earnings || !deductions) {
-            return res.status(400).json({ error: "Earnings and deductions are required" });
+            sendResponse(res, httpStatus.ClientError.BAD_REQUEST, "Earnings and deductions are required", { error: "Earnings and deductions are required" })
+          
         }
 
         // Find employee by ID
         const employee = await Employee.findById(id);
         if (!employee) {
-            return res.status(404).json({ error: "Employee not found" });
+            sendResponse(res, httpStatus.ClientError.NOT_FOUND, "Employee not found", { error: "Employee not found" })
         }
-        
-        // if (name) employee.name = name;
-        // if (email) employee.email = email;
+
+
         // Calculate updated salary
         const updatedSalaryRecord = calculateSalary({ ...earnings, ...deductions });
 
         // Update salary history & current salary
-        //employee.salaryHistory.push(updatedSalaryRecord);
         employee.currentSalary = updatedSalaryRecord;
 
         // Save updated employee record
         await employee.save();
+        sendResponse(res, httpStatus.Success.OK, "Employee salary updated successfully", { name: employee.name, email: employee.email, currentSalary: employee.currentSalary })
 
-        res.status(200).json({ message: "Employee salary updated successfully", employee });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendResponse(res, httpStatus.ServerError.INTERNAL_SERVER_ERROR, "Error", { error: error.message })
+       
     }
 };
 
@@ -76,10 +80,11 @@ exports.deleteEmployee = async (req, res) => {
     try {
         const employee = await Employee.findByIdAndDelete(req.params.id);
         if (!employee) return res.status(404).json({ message: "Employee not found" });
-
-        res.json({ message: "Employee deleted successfully" });
+        sendResponse(res, httpStatus.Success.OK, "Employee Deleted Successfully", { employeeId: employee._id })
+        //res.json({ message: "Employee deleted successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendResponse(res, httpStatus.ServerError.INTERNAL_SERVER_ERROR, "Error", { error: error.message })
+       
     }
 };
 
@@ -88,9 +93,9 @@ exports.getAll = async (req, res) => {
         console.log("Reached getAll");
         const employee = await Employee.find();
         if (!employee) return res.status(404).json({ message: "Employee not found" });
-
-        res.status(200).json(employee);
+        sendResponse(res, httpStatus.Success.OK, "Employee Info", { employee });
+        //res.status(200).json(employee);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendResponse(res, httpStatus.ServerError.INTERNAL_SERVER_ERROR, "Error", { error: error.message })
     }
 };

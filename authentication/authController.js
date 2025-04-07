@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("./User");
+const sendResponse = require("../utils/responseHandler");
+const httpstatus = require("../utils/httpStatus")
 
 exports.register = async (req, res) => {
     try {
@@ -10,26 +12,25 @@ exports.register = async (req, res) => {
 
         const newUser = new User({ name, email, password });
         await newUser.save();
-
-        res.status(201).json({ message: "User registered successfully" });
+        sendResponse(res, httpstatus.Success.OK, "Employee created successfully", { user:newUser })
+       
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendResponse(res, httpstatus.ServerError.INTERNAL_SERVER_ERROR, "Failed to create employee", {}, { message: error.message });
     }
 };
 
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) return res.status(401).json({ message: "Invalid credentials" });
+        const user = await User.findOne({ email });
+        if (!user) return sendResponse(res, httpstatus.ClientError.UNAUTHORIZED, "Invalid credentials", { user })
+        // res.status(401).json({ message: "Invalid credentials" });
+        const payload = { id: user._id, name: user.name ,password:user.password};
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
+        sendResponse(res, httpstatus.Success.OK, "Succesfully Login", { token })
 
-
-
-  const payload = { id: user._id, name: user.name };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
-
-  res.json({ token });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        sendResponse(res, http.ServerError.INTERNAL_SERVER_ERROR, "Failed to Login", { error: error.message })
+
     }
 };
