@@ -85,6 +85,7 @@ exports.deleteEmployee = async (req, res) => {
 
 exports.getAll = async (req, res) => {
     try {
+        console.log("Reached getAll");
         const employee = await Employee.find();
         if (!employee) return res.status(404).json({ message: "Employee not found" });
 

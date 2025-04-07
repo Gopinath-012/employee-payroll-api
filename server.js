@@ -4,11 +4,12 @@ const authRoutes = require('./authentication/authRoutes');
 const employeeRoutes = require('./employee/employeeRoutes');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-//const swaggerDocument = require("./swagger.json"); // Auto-generated file
-
+const passport = require("passport");
+require("./config/passport")(passport); // Path to the above file
 require("dotenv").config();
-const app = express();
 
+const app = express();
+app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 connectDB();
