@@ -24,6 +24,8 @@ if(env==="development")
         },
       },
       security: [{ BearerAuth: [] }],
+      
+  
   };
 
   const outputFile = "../swagger.json"; // Auto-generated file
